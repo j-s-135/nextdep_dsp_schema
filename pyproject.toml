@@ -5,6 +5,27 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "nextdep_dsp_schema"
 version = "0.0.1"
+dependencies = [
+    "GitPython",
+    "mmcif",
+    "numpy",
+    "paramiko",
+    "psutil",
+    "PyNaCl",
+    "python-dateutil",
+    "pytz",
+    "rcsb.utils.io",
+    "requests",
+    "ruamel.yaml",
+    "urllib3",
+]
+
+[project.optional-dependencies]
+test = [
+    "jsondiff",
+    "jsonschema",
+    "rcsb.db",
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]
