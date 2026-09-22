@@ -1,0 +1,389 @@
+# File: nexdep-mmcif-config-schema.yml
+# Date: 21-Jan-2026 bv
+#
+# Updates:
+#  21-Jan-2026   bv Initial definitions
+#
+---
+DEFAULT: {}
+##
+site_info_configuration:
+  #
+  CONFIG_SUPPORT_TOKEN: CONFIG_SUPPORT_TOKEN_ENV
+  #
+  PDBX_REPO_PATH: MOCK_PDBX
+  #
+  # --------- Configuration for remote and local data access ----
+  DISCOVERY_MODE: remote
+  PDB_REPO_URL: https://files.wwpdb.org/pub
+  PDB_REPO_FALLBACK_URL: https://files.wwpdb.org/pub
+  # ---------
+  #
+  #   -- Below are common across current deployments -
+  #
+  # Supporting and integrated resource data cache directory names
+  #
+  DICTIONARY_CACHE_DIR: dictionaries
+  DATA_TYPE_INFO_CACHE_DIR: data_type_and_coverage
+  #
+  #
+  SCHEMA_DEFINITION_LOCATOR_PATH: https://raw.githubusercontent.com/rcsb/py-rcsb_exdb_assets/master/schema_definitions
+  SCHEMA_DEFINITION_CACHE_DIR: schema_definitions
+  JSON_SCHEMA_DEFINITION_LOCATOR_PATH: https://raw.githubusercontent.com/rcsb/py-rcsb_exdb_assets/master/json_schema_definitions
+  JSON_SCHEMA_DEFINITION_CACHE_DIR: json_schema_definitions
+  #
+  #
+  PDBX_DICT_LOCATOR: https://raw.githubusercontent.com/rcsb/py-rcsb_exdb_assets/master/dictionary_files/reference/mmcif_pdbx_v5_next.dic
+  #
+  # ------ ------ ------ ------ ------ ------ ------ ------ ------
+  # Added in rcsb.db V0.966 - Data type details and type mapping
+  APP_DATA_TYPE_INFO_LOCATOR: https://raw.githubusercontent.com/rcsb/py-rcsb_exdb_assets/master/data_type_and_coverage/app_data_type_mapping.cif
+  #
+  INSTANCE_DATA_TYPE_INFO_LOCATOR_PATH: https://raw.githubusercontent.com/rcsb/py-rcsb_exdb_assets/master/data_type_and_coverage
+  #
+  CONTENT_DEF_HELPER_MODULE: nextdep_dsp_schema.helpers.ContentDefinitionHelper
+  DOCUMENT_DEF_HELPER_MODULE: nextdep_dsp_schema.helpers.DocumentDefinitionHelper
+  #
+##
+database_catalog_configuration:
+  #
+  # Inventory of current schema definitions and derivative collection types.
+  #
+  # All defined database definitions -
+  DATABASE_NAMES_ALL: pdbx_mmcif
+  DATATYPING_ALL: ANY
+  ENCODING_TYPES_ALL: wwpdb,json,bson
+  VALIDATION_LEVELS_ALL: min,full
+  #
+
+#
+# Common configuration options for helper classes used for dictionary content generation
+# schema construction --
+#
+content_info_helper_configuration:
+  database_names:
+    pdbx_mmcif:
+      VERSION: 0.0.1
+      INSTANCE_DATA_TYPE_INFO_FILENAME: scan-pdbx_merged-type-map.json
+  #
+  #
+  # Database to dictionary mapping
+  #  Order matters! If a definition exists in multiple dictionaries, the one listed last overwrites the rest
+  DICT_LOCATOR_CONFIG_MAP:
+    pdbx_mmcif:
+      - PDBX_DICT_LOCATOR
+
+  item_transformers:
+    STRIP_WS:
+      - CATEGORY_NAME: entity_poly
+        ATTRIBUTE_NAME: pdbx_c_terminal_seq_one_letter_code
+      - CATEGORY_NAME: entity_poly
+        ATTRIBUTE_NAME: pdbx_n_terminal_seq_one_letter_code
+      - CATEGORY_NAME: entity_poly
+        ATTRIBUTE_NAME: pdbx_seq_one_letter_code
+      - CATEGORY_NAME: entity_poly
+        ATTRIBUTE_NAME: pdbx_seq_one_letter_code_can
+      - CATEGORY_NAME: entity_poly
+        ATTRIBUTE_NAME: pdbx_seq_one_letter_code_sample
+      - CATEGORY_NAME: struct_ref
+        ATTRIBUTE_NAME: pdbx_seq_one_letter_code
+    TRANSLATE_XMLCHARREFS:
+      - CATEGORY_NAME: citation
+      - CATEGORY_NAME: citation_author
+      - CATEGORY_NAME: struct
+      - CATEGORY_NAME: audit_author
+      - CATEGORY_NAME: chem_comp
+
+  cardinality_parent_items:
+    pdbx_mmcif: 
+      CATEGORY_NAME: entry
+      ATTRIBUTE_NAME: id
+
+  cardinality_category_extras: []
+
+  type_code_classes:
+    iterable:
+      - TYPE_CODE: ucode-alphanum-csv
+        DELIMITER: ","
+      - TYPE_CODE: id_list
+        DELIMITER: ","
+      - TYPE_CODE: alphanum-scsv
+        DELIMITER: ";"
+      - TYPE_CODE: alphanum-csv
+        DELIMITER: ","
+      - TYPE_CODE: alphanum-vbsv
+        DELIMITER: "|"
+      - TYPE_CODE: yyyy-mm-dd-scsv
+        DELIMITER: ";"
+      - TYPE_CODE: yyyy-mm-dd-csv
+        DELIMITER: ","
+      - TYPE_CODE: yyyy-mm-dd-vbsv
+        DELIMITER: "|"
+      - TYPE_CODE: int-csv
+        DELIMITER: ","
+      - TYPE_CODE: int-scsv
+        DELIMITER: ";"
+      - TYPE_CODE: float-csv
+        DELIMITER: ","
+      - TYPE_CODE: float-scsv
+        DELIMITER: ";"
+      - TYPE_CODE: any-type-scsv
+        DELIMITER: ";"
+      - TYPE_CODE: any-type-scsv-csv
+        DELIMITER: ";"
+      - TYPE_CODE: float-scsv-csv
+        DELIMITER: ";"
+      - TYPE_CODE: alphanum-scsv-csv
+        DELIMITER: ";"
+      - TYPE_CODE: alphanum-scsv-csv-vbsv
+        DELIMITER: ";"
+    embedded_iterable:
+      - TYPE_CODE: any-type-scsv-csv
+        DELIMITER: ","
+      - TYPE_CODE: float-scsv-csv
+        DELIMITER: ","
+      - TYPE_CODE: alphanum-scsv-csv
+        DELIMITER: ","
+      - TYPE_CODE: alphanum-scsv-csv-vbsv
+        DELIMITER: ","
+    embedded_nested_iterable:
+      - TYPE_CODE: alphanum-scsv-csv-vbsv
+        DELIMITER: "|"
+  query_string_selectors:
+    iterable:
+      - comma separate
+  iterable_delimiters:
+    - CATEGORY_NAME: chem_comp
+      ATTRIBUTE_NAME: pdbx_synonyms
+      DELIMITER: ";"
+    - CATEGORY_NAME: entity
+      ATTRIBUTE_NAME: pdbx_ec
+      DELIMITER: ","
+  # -------- -------- ---- ------ ------
+  # BEGINNING OF SCHEMA CATEGORY-LEVEL CONTENT FILTERS
+  schema_content_filters:
+    pdbx_mmcif: 
+      INCLUDE: []
+      EXCLUDE:
+        - atom_site
+        - atom_site_anisotrop
+
+  # BEGINNING OF SCHEMA ATTRIBUTE-LEVEL CONTENT FILTERS
+  schema_exclude_attributes:
+    pdbx_mmcif: 
+      - CATEGORY_NAME: cell
+        ATTRIBUTE_NAME: length_a_esd
+      - CATEGORY_NAME: cell
+        ATTRIBUTE_NAME: length_b_esd
+      - CATEGORY_NAME: cell
+        ATTRIBUTE_NAME: length_c_esd
+      - CATEGORY_NAME: cell
+        ATTRIBUTE_NAME: angle_alpha_esd
+      - CATEGORY_NAME: cell
+        ATTRIBUTE_NAME: angle_beta_esd
+      - CATEGORY_NAME: cell
+        ATTRIBUTE_NAME: angle_gamma_esd
+      - CATEGORY_NAME: cell
+        ATTRIBUTE_NAME: reciprocal_angle_alpha
+      - CATEGORY_NAME: cell
+        ATTRIBUTE_NAME: reciprocal_angle_beta
+      - CATEGORY_NAME: cell
+        ATTRIBUTE_NAME: reciprocal_angle_gamma
+    #
+# ---- ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- -----
+# BEGINNING OF DOCUMENT CONFIGURATION ---
+document_helper_configuration:
+  # Document level configuration
+  document_collection_names:
+    pdbx_mmcif:
+      - NAME: pdbx_mmcif
+        VERSION: 0.0.1
+  #
+  # ---- ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- ----- ---- -----
+  # BEGINNING OF DOCUMENT CATEGORY FILTER (Note: this is not differentiated by database)
+  #  This section dictates what categories are included and/or excluded from each specific collection
+  document_collection_content_filters:
+    # ------
+    # Database: pdbx_mmcif  collections
+    #
+    pdbx_mmcif: 
+      INCLUDE:
+        - audit_author
+        - cell
+        - citation
+        - rcsb_primary_citation
+        - diffrn
+        - diffrn_detector
+        - diffrn_radiation
+        - diffrn_source
+        - em_2d_crystal_entity
+        - em_3d_crystal_entity
+        - em_3d_fitting
+        - em_3d_fitting_list
+        - em_3d_reconstruction
+        - em_ctf_correction
+        - em_diffraction
+        - em_diffraction_shell
+        - em_diffraction_stats
+        - em_embedding
+        - em_entity_assembly
+        - em_experiment
+        - em_helical_entity
+        - em_image_recording
+        - em_imaging
+        - em_particle_selection
+        - em_single_particle_entity
+        - em_software
+        - em_specimen
+        - em_staining
+        - em_vitrification
+        - entry
+        - exptl
+        - exptl_crystal
+        - exptl_crystal_grow
+        - pdbx_audit_revision_category
+        - pdbx_audit_revision_details
+        - pdbx_audit_revision_group
+        - pdbx_audit_revision_history
+        - pdbx_audit_revision_item
+        - pdbx_audit_support
+        - pdbx_database_pdb_obs_spr
+        - pdbx_database_related
+        - pdbx_database_status
+        - pdbx_deposit_group
+        - pdbx_initial_refinement_model
+        - pdbx_molecule_features
+        - pdbx_nmr_details
+        - pdbx_nmr_ensemble
+        - pdbx_nmr_exptl
+        - pdbx_nmr_exptl_sample_conditions
+        - pdbx_nmr_refine
+        - pdbx_nmr_representative
+        - pdbx_nmr_sample_details
+        - pdbx_nmr_software
+        - pdbx_nmr_spectrometer
+        - pdbx_reflns_twin
+        - pdbx_related_exp_data_set
+        - pdbx_serial_crystallography_data_reduction
+        - pdbx_serial_crystallography_measurement
+        - pdbx_serial_crystallography_sample_delivery
+        - pdbx_serial_crystallography_sample_delivery_fixed_target
+        - pdbx_serial_crystallography_sample_delivery_injection
+        - pdbx_sg_project
+        - pdbx_soln_scatter
+        - pdbx_soln_scatter_model
+        - refine
+        - refine_analyze
+        - refine_hist
+        - refine_ls_restr
+        - reflns
+        - reflns_shell
+        - software
+        - struct
+        - struct_keywords
+        - symmetry
+        - database_2
+      EXCLUDE: []
+    # ------ ----- ------ ----- ------ ----- ------ ----- ------ ----- ------ ----- ------ ----- ------ -----
+  # BEGINNING of COLLECTION REQUIRED/MANDATORY CATEGORIES
+  #  Categories added under this section are made "REQUIRED" in the generated JSON schema file.
+  collection_required_categories:
+    pdbx_mmcif: 
+      - CATEGORY_NAME: entry
+
+  # BEGINNING of COLLECTION REQUIRED/MANDATORY ATTRIBUTES
+  #  Attributes added under this section are made "REQUIRED" in the generated JSON schema file.
+  collection_required_attributes:
+    #
+    pdbx_mmcif: 
+      - CATEGORY_NAME: struct
+        ATTRIBUTE_NAME_LIST:
+          - structure_determination_methodology
+    #
+  # BEGINNING of DOCUMENT ATTRIBUTE FILTERS (Note: not differeniated by database)
+  #  Attributes added under this section are EXCLUDED from the final loaded document. 
+  #
+  collection_attribute_content_filters:
+    #
+    pdbx_mmcif: 
+      - CATEGORY_NAME: em_3d_fitting
+        ATTRIBUTE_NAME_LIST:
+          - entry_id
+      - CATEGORY_NAME: em_3d_reconstruction
+        ATTRIBUTE_NAME_LIST:
+          - entry_id
+      - CATEGORY_NAME: em_experiment
+        ATTRIBUTE_NAME_LIST:
+          - entry_id
+      - CATEGORY_NAME: em_imaging
+        ATTRIBUTE_NAME_LIST:
+          - entry_id
+      - CATEGORY_NAME: em_single_particle_entity
+        ATTRIBUTE_NAME_LIST:
+          - entry_id
+      - CATEGORY_NAME: em_vitrification
+        ATTRIBUTE_NAME_LIST:
+          - entry_id
+      - CATEGORY_NAME: exptl
+        ATTRIBUTE_NAME_LIST:
+          - entry_id
+      - CATEGORY_NAME: pdbx_database_status
+        ATTRIBUTE_NAME_LIST:
+          - entry_id
+      - CATEGORY_NAME: pdbx_nmr_details
+        ATTRIBUTE_NAME_LIST:
+          - entry_id
+      - CATEGORY_NAME: pdbx_nmr_ensemble
+        ATTRIBUTE_NAME_LIST:
+          - entry_id
+      - CATEGORY_NAME: pdbx_nmr_refine
+        ATTRIBUTE_NAME_LIST:
+          - entry_id
+      - CATEGORY_NAME: pdbx_nmr_representative
+        ATTRIBUTE_NAME_LIST:
+          - entry_id
+      - CATEGORY_NAME: pdbx_soln_scatter
+        ATTRIBUTE_NAME_LIST:
+          - entry_id
+      - CATEGORY_NAME: refine
+        ATTRIBUTE_NAME_LIST:
+          - entry_id
+      - CATEGORY_NAME: refine_analyze
+        ATTRIBUTE_NAME_LIST:
+          - entry_id
+      - CATEGORY_NAME: reflns
+        ATTRIBUTE_NAME_LIST:
+          - entry_id
+      - CATEGORY_NAME: struct
+        ATTRIBUTE_NAME_LIST:
+          - entry_id
+      - CATEGORY_NAME: struct_keywords
+        ATTRIBUTE_NAME_LIST:
+          - entry_id
+      - CATEGORY_NAME: symmetry
+        ATTRIBUTE_NAME_LIST:
+          - entry_id
+      - CATEGORY_NAME: pdbx_related_exp_data_set
+        ATTRIBUTE_NAME_LIST:
+          - ordinal
+  # END OF DOCUMENT CONTENT FILTERS
+  # -------- --------- -------- --------- -------- --------- -------- --------- -------- --------- -------- ---------
+  # BEGINNING OF DOCUMENT INDICES
+  #
+  collection_indices:
+    pdbx_mmcif: 
+      - INDEX_NAME: primary
+        UNIQUE: True
+        ATTRIBUTE_NAMES:
+          - entry.id
+  #  END OF DOCUMENT INDICES
+  # ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------ ------
+  collection_suppress_category_relationships:
+    pdbx_mmcif:
+      - PARENT_CATEGORY_NAME: chem_comp_atom
+      - PARENT_CATEGORY_NAME: entity_poly_seq
+        CHILD_CATEGORY_NAME: atom_site
+  #
+  collection_iterable_attribute_metadata: {}
+  ##
+  # --------- ----------- ----------- ----------- ----------- ----------- ----------- ----------- -----------

@@ -1,0 +1,1 @@
+python3 -m nextdep_dsp_schema.cli.SchemaUpdateExec --encoding_types rcsb,json --validation_levels min,full --update_pdbx_mmcif  --cache_path CACHE --config_path nextdep_dsp_schema/config/nexdep-mmcif-config-schema.yml --config_name site_info_configuration
