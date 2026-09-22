@@ -208,7 +208,16 @@ class DataBridgeNow:
 
         print("marshaling complete")
 
-
+def dataBridge(infile:str, outfile:str, unit_cardinality:bool=False, workpath:str="/tmp", schemafile:str | None = None, cachePath:str | None = None) -> bool:
+    dbn = DataBridgeNow(infile, outfile, unit_cardinality=unit_cardinality, workpath=workpath, schemafile=schemafile, cache=cachePath)
+    if guess_file_type(infile) == "cif" and guess_file_type(outfile) == "json":
+        dbn.getJson()
+    elif guess_file_type(infile) == "json" and guess_file_type(outfile) == "cif":
+        dbn.getPdbx()
+    else:
+        print("error guessing file type %s" % infile)
+        return False
+    return True
 
 if __name__ == "__main__":
 
@@ -233,10 +242,8 @@ if __name__ == "__main__":
     if args.cache:
         cachePath = args.cache
 
-    dbn = DataBridgeNow(infile, outfile, unit_cardinality=unit_cardinality, workpath=args.workpath, schemafile=schemafile, cache=cachePath)
-    if guess_file_type(infile) == "cif" and guess_file_type(outfile) == "json":
-        dbn.getJson()
-    elif guess_file_type(infile) == "json" and guess_file_type(outfile) == "cif":
-        dbn.getPdbx()
+    result = dataBridge(infile, outfile, unit_cardinality, args.workpath, schemafile, cachePath)
+    if result:
+        print("completed")
     else:
-        sys.exit("error guessing file type %s" % infile)
+        print("failed")

@@ -4,7 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nextdep_dsp_schema"
-version = "0.0.1"
+version = "0.0.2"
+readme = "README.md"
 dependencies = [
     "GitPython",
     "mmcif",
@@ -29,3 +30,8 @@ test = [
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[dependency-groups]
+dev = [
+    "build>=1.6.1",
+]

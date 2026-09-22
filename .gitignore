@@ -1,0 +1,15 @@
+# Contains the PyPI API token
+upload.sh
+
+# Build output
+build/
+dist/
+*.egg-info/
+
+# Python caches
+__pycache__/
+*.py[cod]
+
+# Environments and IDE
+.venv/
+.idea/
