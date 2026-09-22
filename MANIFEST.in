@@ -1,0 +1,3 @@
+include README.md
+recursive-include src/nextdep_dsp_schema *.py *.yml
+global-exclude __pycache__ *.py[cod]
