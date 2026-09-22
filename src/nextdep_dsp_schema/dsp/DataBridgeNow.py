@@ -53,7 +53,7 @@ def getUnitCardinalityCategories(schemafile, cache) -> list:
 
     return unitCardinalityList
 
-class DataMarshalNow:
+class DataBridgeNow:
 
     def __init__(self, infile:str, outfile:str, unit_cardinality:bool=True, workpath:str="/tmp", schemafile:str=None, cache:str=None, **kwargs):
         """
@@ -233,10 +233,10 @@ if __name__ == "__main__":
     if args.cache:
         cachePath = args.cache
 
-    dm = DataMarshalNow(infile, outfile, unit_cardinality=unit_cardinality, workpath=args.workpath, schemafile=schemafile, cache=cachePath)
+    dbn = DataBridgeNow(infile, outfile, unit_cardinality=unit_cardinality, workpath=args.workpath, schemafile=schemafile, cache=cachePath)
     if guess_file_type(infile) == "cif" and guess_file_type(outfile) == "json":
-        dm.getJson()
+        dbn.getJson()
     elif guess_file_type(infile) == "json" and guess_file_type(outfile) == "cif":
-        dm.getPdbx()
+        dbn.getPdbx()
     else:
         sys.exit("error guessing file type %s" % infile)
