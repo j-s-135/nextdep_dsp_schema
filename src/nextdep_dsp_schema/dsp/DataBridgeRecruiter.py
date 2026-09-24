@@ -53,7 +53,7 @@ def getUnitCardinalityCategories(schemafile, cache) -> list:
 
     return unitCardinalityList
 
-class DataBridgeNow:
+class DataBridgeRecruiter:
 
     def __init__(self, infile:str, outfile:str, unit_cardinality:bool=True, workpath:str="/tmp", schemafile:str=None, cache:str=None, **kwargs):
         """
@@ -208,14 +208,14 @@ class DataBridgeNow:
 
         print("marshaling complete")
 
-def dataBridge(infile:str, outfile:str, unit_cardinality:bool=False, workpath:str="/tmp", schemafile:str | None = None, cachePath:str | None = None) -> bool:
-    dbn = DataBridgeNow(infile, outfile, unit_cardinality=unit_cardinality, workpath=workpath, schemafile=schemafile, cache=cachePath)
+def recruitDataBridge(infile:str, outfile:str, unit_cardinality:bool=False, workpath:str="/tmp", schemafile:str | None = None, cachePath:str | None = None) -> bool:
+    dbn = DataBridgeRecruiter(infile, outfile, unit_cardinality=unit_cardinality, workpath=workpath, schemafile=schemafile, cache=cachePath)
     if guess_file_type(infile) == "cif" and guess_file_type(outfile) == "json":
         dbn.getJson()
     elif guess_file_type(infile) == "json" and guess_file_type(outfile) == "cif":
         dbn.getPdbx()
     else:
-        print("error guessing file type %s" % infile)
+        print("error guessing file type: %s = %s, %s = %s" % (infile, guess_file_type(infile), outfile, guess_file_type(outfile)))
         return False
     return True
 
