@@ -77,13 +77,16 @@ def getUnitCardinalityCategories(schemafile, cache) -> list:
 
 class DataBridgeRecruiter:
 
-    def __init__(self, infile:str, outfile:str, unit_cardinality:bool=True, workpath:str="/tmp", schemafile:str=None, cache:str=None, **kwargs):
+    def __init__(self, infile:str, outfile:str, unit_cardinality:bool=True, skip_coords:bool=True, workpath:str="/tmp", schemafile:str=None, cache:str=None, **kwargs):
         """
         Attributes:
             infile (str): cif or json file path
             outfile (str): cif or json file path
             unit_cardinality (bool): allows loops of one object to be represented as a single object
+            skip_coords (bool): do not convert mmcif coordinates to json
             workpath (str): working directory path passed to MarshalUtil
+            schemafile (str): schema file
+            cache (str): cache path
         """
         self.workpath = workpath
         if not os.path.exists(infile):
@@ -96,6 +99,7 @@ class DataBridgeRecruiter:
         # assert inlabel == outlabel, "input and output filenames must be the same %s %s" % (inlabel, outlabel)
         # render loops of one object as a single object
         self.unit_cardinality = unit_cardinality
+        self.skip_coords = skip_coords
         self.schemafile = schemafile
         self.cache = cache
         if self.unit_cardinality:
@@ -168,6 +172,8 @@ class DataBridgeRecruiter:
                         shortname = name
                         if name.startswith("_"):
                             shortname = name[1:]
+                        if self.skip_coords and shortname == "atom_site":
+                            continue
                         if len(data) == 1 and self.unit_cardinality and shortname in self.unit_cardinality_list:
                             j[name] = {}
                             row = data[0]
@@ -230,8 +236,8 @@ class DataBridgeRecruiter:
 
         print("marshaling complete")
 
-def recruitDataBridge(infile:str, outfile:str, unit_cardinality:bool=False, workpath:str="/tmp", schemafile:str | None = "src/nextdep_dsp_schema/config/nexdep-mmcif-config-schema.yml", cachePath:str | None = "src/CACHE") -> bool:
-    dbn = DataBridgeRecruiter(infile, outfile, unit_cardinality=unit_cardinality, workpath=workpath, schemafile=schemafile, cache=cachePath)
+def recruitDataBridge(infile:str, outfile:str, unit_cardinality:bool=False, skip_coords:bool=True, workpath:str="/tmp", schemafile:str | None = "src/nextdep_dsp_schema/config/nexdep-mmcif-config-schema.yml", cachePath:str | None = "src/CACHE") -> bool:
+    dbn = DataBridgeRecruiter(infile, outfile, unit_cardinality=unit_cardinality, skip_coords=skip_coords, workpath=workpath, schemafile=schemafile, cache=cachePath)
     if guess_file_type(infile) == "cif" and guess_file_type(outfile) == "json":
         dbn.getJson()
     elif guess_file_type(infile) == "json" and guess_file_type(outfile) == "cif":
