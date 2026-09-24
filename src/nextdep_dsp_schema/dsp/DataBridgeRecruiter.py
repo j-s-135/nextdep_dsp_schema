@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 import argparse
 import json
@@ -9,6 +10,27 @@ from nextdep_dsp_schema.io.MarshalUtil import MarshalUtil
 from ..config.ConfigUtil import ConfigUtil
 from ..define.ContentDefinition import ContentDefinition
 from ..define.DictionaryApiProviderWrapper import DictionaryApiProviderWrapper
+
+
+def get_next_value(s:str) -> str | float | int | None:
+    """convert value of mmcif attribute to typed json value
+    args:
+        s (str): value to convert
+    returns:
+        converted value
+    """
+    if re.match(r"^[-]?\d*\.\d+$", s):
+        return float(s)
+    elif s.isdigit():
+        return int(s)
+    elif s == "?" or s == ".":
+        return None
+    tokens = s.split()
+    if len(tokens) == 1:
+        return s
+    # optionally quote multi-word string
+    # return "'%s'" % s.replace("'", "")
+    return s
 
 
 def guess_file_type(filename:str) -> Optional[str]:
@@ -150,13 +172,13 @@ class DataBridgeRecruiter:
                             j[name] = {}
                             row = data[0]
                             for attr, val in zip(attrs, row):
-                                j[name][attr] = val
+                                j[name][attr] = get_next_value(val)
                         else:
                             j[name] = []
                             for row in data:
                                 rowD = {}
                                 for attr, val in zip(attrs, row):
-                                    rowD[attr] = val
+                                    rowD[attr] = get_next_value(val)
                                 j[name].append(rowD)
                     else:
                         sys.exit("duplicate category name %s" % name)
@@ -242,7 +264,7 @@ if __name__ == "__main__":
     if args.cache:
         cachePath = args.cache
 
-    result = dataBridge(infile, outfile, unit_cardinality, args.workpath, schemafile, cachePath)
+    result = recruitDataBridge(infile, outfile, unit_cardinality, args.workpath, schemafile, cachePath)
     if result:
         print("completed")
     else:
