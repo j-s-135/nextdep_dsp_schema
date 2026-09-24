@@ -230,7 +230,7 @@ class DataBridgeRecruiter:
 
         print("marshaling complete")
 
-def recruitDataBridge(infile:str, outfile:str, unit_cardinality:bool=False, workpath:str="/tmp", schemafile:str | None = None, cachePath:str | None = None) -> bool:
+def recruitDataBridge(infile:str, outfile:str, unit_cardinality:bool=False, workpath:str="/tmp", schemafile:str | None = "src/nextdep_dsp_schema/config/nexdep-mmcif-config-schema.yml", cachePath:str | None = "src/CACHE") -> bool:
     dbn = DataBridgeRecruiter(infile, outfile, unit_cardinality=unit_cardinality, workpath=workpath, schemafile=schemafile, cache=cachePath)
     if guess_file_type(infile) == "cif" and guess_file_type(outfile) == "json":
         dbn.getJson()
@@ -248,8 +248,8 @@ if __name__ == "__main__":
     parser.add_argument("--outfile", required=True, help="json file")
     parser.add_argument("--unit_cardinality", action="store_true", help="retain unit cardinality")
     parser.add_argument("--workpath", default="/tmp", help="working path")
-    parser.add_argument("--schemafile", default=None, help="schema file")
-    parser.add_argument("--cache", default=None, help="schema cache directory path")
+    parser.add_argument("--schemafile", default="src/nextdep_dsp_schema/config/nexdep-mmcif-config-schema.yml", help="schema file")
+    parser.add_argument("--cache", default="src/CACHE", help="schema cache directory path")
 
     args = parser.parse_args()
     infile = args.infile
