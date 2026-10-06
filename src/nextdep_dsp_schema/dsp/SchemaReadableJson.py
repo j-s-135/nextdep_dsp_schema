@@ -53,6 +53,17 @@ def guess_file_type(filename:str) -> Optional[str]:
         return None
 
 def getUnitCardinalityCategories(schemafile, cache) -> list:
+    """
+    Read input schema and dictionary to determine categories with unit cardinality.
+
+    Args:
+        schemafile: default src/nextdep_dsp_schema/config/nexdep-mmcif-config-schema.yml
+        cache: cache path for storing mmcif dictionary download
+
+    Returns:
+        unitCardinalityList: list of stringed category names with unit cardinality
+
+    """
 
     configPath = schemafile
     cachePath = cache
@@ -77,7 +88,7 @@ def getUnitCardinalityCategories(schemafile, cache) -> list:
 
 class SchemaReadableJson:
 
-    def __init__(self, infile:str, outfile:str, unit_cardinality:bool=True, skip_coords:bool=True, workpath:str="/tmp", schemafile:str=None, cache:str=None, **kwargs):
+    def __init__(self, infile:str, outfile:str, unit_cardinality:bool=True, skip_coords:bool=True, workpath:str="/tmp", schemafile:str="src/nextdep_dsp_schema/config/nexdep-mmcif-config-schema.yml", cache:str="src/CACHE", **kwargs):
         """
         Attributes:
             infile (str): cif or json file path
@@ -85,8 +96,8 @@ class SchemaReadableJson:
             unit_cardinality (bool): allows loops of one object to be represented as a single object
             skip_coords (bool): do not convert mmcif coordinates to json
             workpath (str): working directory path passed to MarshalUtil
-            schemafile (str): schema file
-            cache (str): cache path
+            schemafile (str): schema file for determination of unit cardinality categories
+            cache (str): cache path for storing mmcif dictionary download
         """
         self.workpath = workpath
         if not os.path.exists(infile):
@@ -94,7 +105,9 @@ class SchemaReadableJson:
         self.infile = infile
         self.outfile = outfile
         # find name for data block
+        # assume that input file will be named after PDB entry (e.g. 3HHB.cif), this will be used for data block name
         inlabel = os.path.splitext(os.path.basename(infile).upper())[0].split("-")[0]
+        # output file may be random temporary file name
         outlabel = os.path.splitext(os.path.basename(outfile).upper())[0].split("-")[0]
         # assert inlabel == outlabel, "input and output filenames must be the same %s %s" % (inlabel, outlabel)
         # render loops of one object as a single object
@@ -133,7 +146,7 @@ class SchemaReadableJson:
 
     def getJson(self):
         """
-        Converts mmCIF data to JSON format for one or multiple data blocks.
+        Converts mmCIF data to schema readable JSON format for one or multiple data blocks.
         Each data block is converted to a separate JSON file indexed with -[index].cif.
         """
 
@@ -217,6 +230,10 @@ class SchemaReadableJson:
         """
         ordc = mu.doImport(self.infile, fmt="json")
 
+        """
+        DataContainer
+        {category1: DataCategory1, category2: DataCategory2, ...}
+        """
         obj = DataContainer(self.get_entry_id())
 
         for k,v in ordc.items():
@@ -227,7 +244,13 @@ class SchemaReadableJson:
             else:
                 attrs = list(v.keys())
                 data = [list(v.values())]
+
+            """
+            DataCategory
+            category:str, attrs:list, data:list[list]
+            """
             dc = DataCategory(name, attributeNameList=attrs, rowList=data)
+
             obj.append(dc)
 
         mu.doExport(self.outfile, [obj], fmt="mmcif-dict")
