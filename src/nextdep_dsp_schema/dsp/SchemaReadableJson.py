@@ -102,6 +102,8 @@ class SchemaReadableJson:
         self.workpath = workpath
         if not os.path.exists(infile):
             sys.exit("error - file %s does not exist" % infile)
+        if not os.path.exists(cache):
+            os.makedirs(cache)
         self.infile = infile
         self.outfile = outfile
         # find name for data block
