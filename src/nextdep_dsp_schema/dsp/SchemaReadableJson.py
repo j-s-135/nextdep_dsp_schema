@@ -270,7 +270,7 @@ if __name__ == "__main__":
     if args.cache:
         cachePath = args.cache
 
-    result = recruitDataBridge(infile, outfile, unit_cardinality, args.workpath, schemafile, cachePath)
+    result = getSchemaReadableJson(infile, outfile, unit_cardinality, args.workpath, schemafile, cachePath)
     if result:
         print("completed")
     else:
