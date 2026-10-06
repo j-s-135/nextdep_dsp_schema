@@ -111,7 +111,6 @@ class SchemaReadableJson:
         inlabel = os.path.splitext(os.path.basename(infile).upper())[0].split("-")[0]
         # output file may be random temporary file name
         outlabel = os.path.splitext(os.path.basename(outfile).upper())[0].split("-")[0]
-        # assert inlabel == outlabel, "input and output filenames must be the same %s %s" % (inlabel, outlabel)
         # render loops of one object as a single object
         self.unit_cardinality = unit_cardinality
         self.skip_coords = skip_coords
